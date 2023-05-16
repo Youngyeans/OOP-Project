@@ -31,6 +31,8 @@ public class GamePanel extends JPanel implements Runnable{
     
     //to input key event
     KeyHandler keyH = new KeyHandler();
+    
+    SleepSetter sl = new SleepSetter();
     //run
     Thread gameThread;
     
@@ -40,7 +42,7 @@ public class GamePanel extends JPanel implements Runnable{
     public AssetSetter aSetter = new AssetSetter(this);
     
     //from Player Class
-    public Player player = new Player(this, keyH);
+    public Player player = new Player(this, keyH, sl);
     
     //Object
     public SuperObject obj[] = new SuperObject[40];
@@ -62,6 +64,7 @@ public class GamePanel extends JPanel implements Runnable{
         
         //focused to recieve key input
         this.setFocusable(true);
+        
     }
     
     public void setupGame(){
@@ -130,7 +133,7 @@ public class GamePanel extends JPanel implements Runnable{
                 cust[i].update();
             }
         }
-        
+        System.out.println(keyH.counter);
     }
     
     @Override

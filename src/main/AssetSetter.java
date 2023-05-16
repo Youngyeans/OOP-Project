@@ -84,7 +84,6 @@ public class AssetSetter {
     
     public void setCustomer(){
         gp.cust[0] = new Customer(gp);
-        System.out.println("1");
         gp.cust[0].x = gp.tileSize * 2 - 8;
         //gp.cust[0].y = gp.tileSize * 2;
         gp.cust[0].y = 0;
@@ -92,42 +91,36 @@ public class AssetSetter {
         gp.cust[0].hasline = false;
         
         gp.cust[1] = new Customer(gp);
-        System.out.println("2");
         gp.cust[1].x = gp.tileSize * 2 - 8;
         gp.cust[1].y = 0;
         gp.cust[1].hasTable = false;
         gp.cust[1].hasline = false;
         
         gp.cust[2] = new Customer(gp);
-        System.out.println("3");
         gp.cust[2].x = gp.tileSize * 2 - 8;
         gp.cust[2].y = 0;
         gp.cust[2].hasTable = false;
         gp.cust[2].hasline = false;
         
         gp.cust[3] = new Customer(gp);
-        System.out.println("4");
         gp.cust[3].x = gp.tileSize * 2 - 8;
         gp.cust[3].y = 0;
         gp.cust[3].hasTable = false;
         gp.cust[3].hasline = false;
         
         gp.cust[4] = new Customer(gp);
-        System.out.println("5");
         gp.cust[4].x = gp.tileSize * 2 - 8;
         gp.cust[4].y = 0;
         gp.cust[4].hasTable = false; 
         gp.cust[4].hasline = false;
         
         gp.cust[5] = new Customer(gp);
-        System.out.println("6");
         gp.cust[5].x = gp.tileSize * 2 - 8;
         gp.cust[5].y = 0;
         gp.cust[5].hasTable = false; 
         gp.cust[5].hasline = false;
         
         gp.cust[6] = new Customer(gp);
-        System.out.println("7");
         gp.cust[6].x = gp.tileSize * 2 - 8;
         gp.cust[6].y = 0;
         gp.cust[6].hasTable = false; 

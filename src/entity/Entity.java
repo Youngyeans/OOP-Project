@@ -68,6 +68,7 @@ public class Entity {
                     solidArea.height = 0;
                     solidArea.width = 0;
                     gp.obj[1].empty = false;
+                    System.out.println(gp.obj[1].empty);
                     hasTable = true;
                     //table A with Customer
                     gp.obj[21] = new TablewithCust();

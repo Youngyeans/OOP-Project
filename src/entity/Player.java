@@ -8,21 +8,28 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import main.GamePanel;
 import main.KeyHandler;
+import main.SleepSetter;
+import object.Shop;
 import object.ShopnoNoodle;
 import object.TablewithDish;
 import object.topTablewithDish;
+import org.w3c.dom.css.Counter;
 
 public class Player extends Entity{
     GamePanel gp;
     KeyHandler keyH;
+    SleepSetter sl;
     
     int hasKey = 0;
     
-    public Player(GamePanel gp, KeyHandler keyH){
+ 
+    
+    public Player(GamePanel gp, KeyHandler keyH, SleepSetter sl){
         
         super(gp);
         this.gp = gp;
         this.keyH = keyH;
+        this.sl = sl;
         
         //solid (x, y, width, height)
         solidArea = new Rectangle();
@@ -71,8 +78,9 @@ public class Player extends Entity{
     
     //change posiition
     public void update(){
+        
         if(keyH.upPressed == true || keyH.downPressed == true || 
-                keyH.leftPressed == true || keyH.rightPressed == true){
+                keyH.leftPressed == true || keyH.rightPressed == true || keyH.pickUpPressed == true){
             if(keyH.upPressed == true){
                 direction = "up";
             }
@@ -99,7 +107,7 @@ public class Player extends Entity{
             
             
             //no collision = can move
-            if(collisionOn == false){
+            if(collisionOn == false && keyH.pickUpPressed == false){
                 switch(direction){
                     case "up":
                         y -= speed;
@@ -126,15 +134,16 @@ public class Player extends Entity{
                 }
                 spriteCounter = 0;
             }
+            sl.Counter();
+            
         }
     }
     
     public void pickUpObject(int i) {
-        
    
 
         if(keyH.pickUpPressed == true){
-            if(i == 0){
+            if(i == 0 || i == 35){
                 String objectName = gp.obj[i].name; 
                 
                 switch(objectName){
@@ -144,7 +153,7 @@ public class Player extends Entity{
                         gp.obj[19].x = 7 * gp.tileSize + 23;
                         gp.obj[19].y = 0;
 
-                        hasKey+=3;
+                        hasKey += 1;
                         gp.obj[i] = null;
                         System.out.println("key : "+ hasKey);
                         
@@ -152,12 +161,13 @@ public class Player extends Entity{
                 }       
             }
             
-            else if(i == 1){
+            else if(i == 31){
                 String objectName = gp.obj[i].name;
             
                 switch(objectName){
                     case("Table"):
                         if(hasKey > 0){
+
                             gp.obj[6] = new TablewithDish();
                             gp.obj[6].x = 5 * gp.tileSize + 13;
                             gp.obj[6].y = 3 * gp.tileSize + 14;
@@ -166,8 +176,13 @@ public class Player extends Entity{
                             gp.obj[11].x = 5 * gp.tileSize + 13;
                             gp.obj[11].y = 3 * gp.tileSize + 14;
                             
-                            gp.obj[1] = null;
-                            hasKey-- ;
+                            gp.obj[i - 10].width = 0;
+                            gp.obj[i - 10].height = 0;
+                            
+                            gp.obj[i].width = 0;
+                            gp.obj[i].height = 0;
+                            
+                            hasKey--;
                             
                             System.out.println("key : "+ hasKey);
                     
@@ -176,7 +191,7 @@ public class Player extends Entity{
                 } 
             }
             
-            else if(i == 2){
+            else if(i == 32){
                 String objectName = gp.obj[i].name;
             
                 switch(objectName){
@@ -190,14 +205,18 @@ public class Player extends Entity{
                             gp.obj[12].x = 11 * gp.tileSize - 14;
                             gp.obj[12].y = 3 * gp.tileSize + 14;
                             
-                            gp.obj[2] = null;
+                            gp.obj[i - 10].width = 0;
+                            gp.obj[i - 10].height = 0;
+                            
+                            gp.obj[i].width = 0;
+                            gp.obj[i].height = 0;
                             hasKey-- ;
                             System.out.println("key : "+ hasKey);
                            
                         }
                 } 
             }  
-            else if(i == 3){
+            else if(i == 33){
                 String objectName = gp.obj[i].name;
             
                 switch(objectName){
@@ -211,7 +230,11 @@ public class Player extends Entity{
                             gp.obj[13].x = 5 * gp.tileSize + 13;
                             gp.obj[13].y = 7 * gp.tileSize + 7;
                             
-                            gp.obj[3] = null;
+                            gp.obj[i - 10].width = 0;
+                            gp.obj[i - 10].height = 0;
+                            
+                            gp.obj[i].width = 0;
+                            gp.obj[i].height = 0;
                             hasKey-- ;
                             System.out.println("key : "+ hasKey);
                              
@@ -219,7 +242,7 @@ public class Player extends Entity{
                 } 
             }
             
-            else if(i == 4){
+            else if(i == 34){
                 String objectName = gp.obj[i].name;
             
                 switch(objectName){
@@ -233,7 +256,11 @@ public class Player extends Entity{
                             gp.obj[14].x = 11 * gp.tileSize - 14;
                             gp.obj[14].y = 7 * gp.tileSize + 7;
                             
-                            gp.obj[4] = null;
+                            gp.obj[i - 10].width = 0;
+                            gp.obj[i - 10].height = 0;
+                            
+                            gp.obj[i].width = 0;
+                            gp.obj[i].height = 0;
                             hasKey-- ;
                             System.out.println("key : "+ hasKey);
            
@@ -321,6 +348,15 @@ public class Player extends Entity{
         }
         //g2.drawImage(image, x, y, gp.tileSize, gp.tileSize, null);
         g2.drawImage(image, x, y, 69, 69, null);
+                    
+        
+        if(keyH.counter > sl.randomNumber){
+                        gp.obj[35] = new Shop();
+                        gp.obj[35].x = 7 * gp.tileSize + 23;
+                        gp.obj[35].y = 0;
+                        
+                        keyH.counter = 0;
+                        }
         
     }
 }
