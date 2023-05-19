@@ -1,3 +1,4 @@
+
 package entity;
 
 import java.awt.Graphics2D;
@@ -5,31 +6,41 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import javax.imageio.ImageIO;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import main.GamePanel;
 import main.KeyHandler;
-import main.SleepSetter;
-import object.Shop;
-import object.ShopnoNoodle;
-import object.TablewithDish;
-import object.topTablewithDish;
-import org.w3c.dom.css.Counter;
+import Timer.tableACooldown;
+import Timer.tableBCooldown;
+import Timer.tableCCooldown;
+import Timer.tableDCooldown;
+import javax.imageio.ImageIO;
 
 public class Player extends Entity{
+    
     GamePanel gp;
     KeyHandler keyH;
-    SleepSetter sl;
     
-    int hasKey = 0;
+    public int hasKey = 0;
+    int hasMob = 0;
+    int tableAPhase, tableBPhase, tableCPhase, tableDPhase;
+    boolean tableA, tableB, tableC, tableD, ordered, cancelMoodA, cancelMoodB, cancelMoodC, cancelMoodD;
+    int justOnetimeFx = 0;
+    public int point = 0;
+    // serve = 
     
- 
-    
-    public Player(GamePanel gp, KeyHandler keyH, SleepSetter sl){
+// eating 
+    tableACooldown cooldownA = new tableACooldown(15000);
+    tableBCooldown cooldownB = new tableBCooldown(15000); 
+    tableCCooldown cooldownC = new tableCCooldown(15000); 
+    tableDCooldown cooldownD = new tableDCooldown(15000);
+
+
+    public Player(GamePanel gp, KeyHandler keyH){
         
         super(gp);
         this.gp = gp;
         this.keyH = keyH;
-        this.sl = sl;
         
         //solid (x, y, width, height)
         solidArea = new Rectangle();
@@ -43,7 +54,8 @@ public class Player extends Entity{
         setDefaultValues();
         getPlayerImage();
     }
-    
+
+    //stat and position
     public void setDefaultValues(){
         x = 13 * gp.tileSize + 10;
         y = 2 * gp.tileSize + 20;
@@ -70,7 +82,7 @@ public class Player extends Entity{
             leftdish2 = ImageIO.read(new File("res/player/leftdish2.png"));
             rightdish1 = ImageIO.read(new File("res/player/rightdish1.png"));
             rightdish2 = ImageIO.read(new File("res/player/rightdish2.png"));
-            
+    
         }catch(IOException e){
             e.printStackTrace();
         }
@@ -78,7 +90,67 @@ public class Player extends Entity{
     
     //change posiition
     public void update(){
+       // check if customer A is full
+            if(tableA == true){
+                if(cooldownA.finishedA == true){
+                    try {
+                        gp.obj[1].image = ImageIO.read(new File("res/objects/fullCustomer.png"));
+                        
+                    } catch (IOException ex) {
+                        Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    
+                    tableAPhase = 3;
+                    tableA = false;
+                    cooldownA.finishedA = false;
+                    
+                }  
+            }
+        // check if customer B is full
+            if(tableB == true){
+                if(cooldownB.finishedB == true){
+                    try {
+                        gp.obj[2].image = ImageIO.read(new File("res/objects/fullCustomer.png"));
+                    } catch (IOException ex) {
+                        Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                    tableBPhase = 3;
+                    tableB = false;
+                    cooldownB.finishedB = false;   
+                }
+            }
+        // check if customer C is full
+            if(tableC == true){
+                if(cooldownC.finishedC == true){
+                    
+                    try {
+                        gp.obj[3].image = ImageIO.read(new File("res/objects/fullCustomer.png"));
+                    } catch (IOException ex) {
+                        Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    
+                    tableC = false;
+                    cooldownC.finishedC = false;
+                    tableCPhase = 3;
+                }  
+            }
+        // check if customer D is full
+            if(tableD == true){
+                if(cooldownD.finishedD == true){
+                    try {
+                        gp.obj[4].image = ImageIO.read(new File("res/objects/fullCustomer.png"));
+                    } catch (IOException ex) {
+                        Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    
+                    tableD = false;
+                    cooldownD.finishedD = false;  
+                    tableDPhase = 3;
+                }    
+            }
         
+        // move
         if(keyH.upPressed == true || keyH.downPressed == true || 
                 keyH.leftPressed == true || keyH.rightPressed == true || keyH.pickUpPressed == true){
             if(keyH.upPressed == true){
@@ -101,11 +173,10 @@ public class Player extends Entity{
             //check obj collision
             int objIndex = gp.cChecker.checkObject(this, true);
             pickUpObject(objIndex);
-           
+            
             //check customer collision
             int custIndex = gp.cChecker.checkEntity(this, gp.cust);
-            
-            
+               
             //no collision = can move
             if(collisionOn == false && keyH.pickUpPressed == false){
                 switch(direction){
@@ -134,145 +205,281 @@ public class Player extends Entity{
                 }
                 spriteCounter = 0;
             }
-            sl.Counter();
-            
         }
     }
-    
+  
+////////////////////////////////////////////////////////////////////////////////    
     public void pickUpObject(int i) {
-   
-
         if(keyH.pickUpPressed == true){
-            if(i == 0 || i == 35){
+        // ringbell    
+            if(i == 5){
+                String objectName = gp.obj[i].name; 
+  
+                switch(objectName){
+                    case("Key"): 
+                        try {
+                            ordered = true;
+                            gp.obj[0].image = ImageIO.read(new File("res/objects/shopwnoodle.png"));
+                        } catch (IOException ex) {
+                            Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    // play sound only 1 time 
+                        if(justOnetimeFx == 0){
+                            gp.playSoundFX(1);
+                            justOnetimeFx = 1;
+                        }else if (justOnetimeFx == 1){
+                           // do nothing
+                        }
+                }       
+            }
+        // clean  
+            if(i == 6){
+                String objectName = gp.obj[i].name; 
+                
+                switch(objectName){
+                    case("Clean"):
+                        hasMob = 1;   
+                        gp.ui.showMessage("You got a mop!");
+                        gp.ui.x = gp.tileSize/2;
+                        gp.ui.y = gp.tileSize * 5;
+                }    
+            }
+            
+        // shop
+            if(i == 0 && ordered == true){
                 String objectName = gp.obj[i].name; 
                 
                 switch(objectName){
                     case("Shop"):
-                      
-                        gp.obj[19] = new ShopnoNoodle();
-                        gp.obj[19].x = 7 * gp.tileSize + 23;
-                        gp.obj[19].y = 0;
-
-                        hasKey += 1;
-                        gp.obj[i] = null;
-                        System.out.println("key : "+ hasKey);
+                        try {
+                            gp.obj[0].image = ImageIO.read(new File("res/objects/shop.png"));
+           
+                        } catch (IOException ex) {
+                            Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                         
-                        
-                }       
+                        hasKey = 1;                       
+                        ordered = false;
+                        justOnetimeFx = 0;    
+                        gp.ui.showMessage("You got a noddle!");
+                        gp.ui.x = gp.tileSize/2;
+                        gp.ui.y = gp.tileSize * 5;
+                }
             }
-            
-            else if(i == 31){
+        
+        // table A
+            else if(i == 1 && tableAPhase == 1){
                 String objectName = gp.obj[i].name;
             
                 switch(objectName){
                     case("Table"):
-                        if(hasKey > 0){
-
-                            gp.obj[6] = new TablewithDish();
-                            gp.obj[6].x = 5 * gp.tileSize + 13;
-                            gp.obj[6].y = 3 * gp.tileSize + 14;
-                            
-                            gp.obj[11] = new topTablewithDish();
-                            gp.obj[11].x = 5 * gp.tileSize + 13;
-                            gp.obj[11].y = 3 * gp.tileSize + 14;
-                            
-                            gp.obj[i - 10].width = 0;
-                            gp.obj[i - 10].height = 0;
-                            
-                            gp.obj[i].width = 0;
-                            gp.obj[i].height = 0;
-                            
+                    if(hasKey > 0 ){
+                        try {
+                            gp.obj[1].image = ImageIO.read(new File("res/objects/eat.png"));
+           
+                        } catch (IOException ex) {
+                            Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                
                             hasKey--;
-                            
-                            System.out.println("key : "+ hasKey);
-                    
-                        }       
-                        
+                            tableAPhase = 2;
+                            cooldownA.startCooldown();
+                            tableA = true;
+                            cancelMoodA = true;  
+                            gp.playSoundFX(3);
+                            point += 100;
+                            gp.ui.showMessage("+ 100");
+                            gp.ui.x = 300;
+                            gp.ui.y = 240;
+                            System.out.println("point: " + point);
+                    }              
                 } 
             }
-            
-            else if(i == 32){
+        // table B
+            else if(i == 2  && tableBPhase == 1){
                 String objectName = gp.obj[i].name;
             
                 switch(objectName){
                     case("Table"):
                         if(hasKey > 0){
-                            gp.obj[7] = new TablewithDish();
-                            gp.obj[7].x = 11 * gp.tileSize - 14;
-                            gp.obj[7].y = 3 * gp.tileSize + 14;
+                            try {
+                                gp.obj[2].image = ImageIO.read(new File("res/objects/eat.png"));
+                            } catch (IOException ex) {
+                                Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
+                            }
                             
-                            gp.obj[12] = new topTablewithDish();
-                            gp.obj[12].x = 11 * gp.tileSize - 14;
-                            gp.obj[12].y = 3 * gp.tileSize + 14;
-                            
-                            gp.obj[i - 10].width = 0;
-                            gp.obj[i - 10].height = 0;
-                            
-                            gp.obj[i].width = 0;
-                            gp.obj[i].height = 0;
                             hasKey-- ;
-                            System.out.println("key : "+ hasKey);
-                           
+                            tableBPhase = 2;
+                            cooldownB.startCooldown();
+                            tableB = true;
+                            cancelMoodB = true;  
+                            gp.playSoundFX(3);
+                            point += 100;
+                            gp.ui.showMessage("+ 100");
+                            gp.ui.x = 550;
+                            gp.ui.y = 240;
+                            System.out.println("point: " + point);
                         }
                 } 
             }  
-            else if(i == 33){
+        //table c    
+            else if(i == 3 && tableCPhase == 1){
                 String objectName = gp.obj[i].name;
             
                 switch(objectName){
                     case("Table"):
                         if(hasKey > 0){
-                            gp.obj[8] = new TablewithDish();
-                            gp.obj[8].x = 5 * gp.tileSize + 13;
-                            gp.obj[8].y = 7 * gp.tileSize + 7;
                             
-                            gp.obj[13] = new topTablewithDish();
-                            gp.obj[13].x = 5 * gp.tileSize + 13;
-                            gp.obj[13].y = 7 * gp.tileSize + 7;
+                            try {
+                                gp.obj[3].image = ImageIO.read(new File("res/objects/eat.png"));
+                            } catch (IOException ex) {
+                                Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
+                            }       
                             
-                            gp.obj[i - 10].width = 0;
-                            gp.obj[i - 10].height = 0;
-                            
-                            gp.obj[i].width = 0;
-                            gp.obj[i].height = 0;
                             hasKey-- ;
-                            System.out.println("key : "+ hasKey);
-                             
+                            gp.playSoundFX(3);
+                            tableCPhase = 2;
+                            cooldownC.startCooldown();
+                            tableC = true;
+                            cancelMoodC = true;
+                            point += 100;
+                            gp.ui.showMessage("+ 100");
+                            gp.ui.x = 300;
+                            gp.ui.y = 430;
+                            System.out.println("point: " + point);
+                        }
+                } 
+            }
+        // table D
+            else if(i == 4 && tableDPhase == 1){
+                String objectName = gp.obj[i].name;
+            
+                switch(objectName){
+                    case("Table"):
+                        if(hasKey > 0){
+                            
+                            try {
+                                gp.obj[4].image = ImageIO.read(new File("res/objects/eat.png"));
+                            } catch (IOException ex) {
+                                Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                            hasKey-- ;
+                            gp.playSoundFX(3);
+                            tableDPhase = 2;
+                            cooldownD.startCooldown();
+                            tableD = true;
+                            cancelMoodD = true;
+                            point += 100;
+                            gp.ui.showMessage("+ 100");
+                            gp.ui.x = 550;
+                            gp.ui.y = 430;
+                            System.out.println("point: " + point);
                         }
                 } 
             }
             
-            else if(i == 34){
-                String objectName = gp.obj[i].name;
-            
-                switch(objectName){
-                    case("Table"):
-                        if(hasKey > 0){
-                            gp.obj[9] = new TablewithDish();
-                            gp.obj[9].x = 11 * gp.tileSize - 14;
-                            gp.obj[9].y = 7 * gp.tileSize + 7;
-                            
-                            gp.obj[14] = new topTablewithDish();
-                            gp.obj[14].x = 11 * gp.tileSize - 14;
-                            gp.obj[14].y = 7 * gp.tileSize + 7;
-                            
-                            gp.obj[i - 10].width = 0;
-                            gp.obj[i - 10].height = 0;
-                            
-                            gp.obj[i].width = 0;
-                            gp.obj[i].height = 0;
-                            hasKey-- ;
-                            System.out.println("key : "+ hasKey);
-           
-                        }
-                } 
+        // table A after full
+            else if (i == 1 && tableAPhase == 3 && hasMob == 1){
+                try {
+                    gp.obj[1].image = ImageIO.read(new File("res/objects/table1.png"));
+                    int pos = gp.cust.size();
+                    gp.cust.add(new Customer(gp));
+                    gp.cust.get(pos).x = gp.tileSize * 2 - 8;
+                    gp.cust.get(pos).y = 0;
+                    gp.cust.get(pos).hasTable = false;
+                    gp.obj[1].empty = true;
+                    tableAPhase = 0;
+                    hasMob = 0;
+                    gp.player.cancelMoodA = false;
+                    point += 500;
+                    gp.ui.showMessage("+ 500");
+                    System.out.println("point:" + point);
+                    gp.ui.x = 300;
+                    gp.ui.y = 240;
+                    
+                } catch (IOException ex) {
+                    Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        // table B after full    
+            else if (i == 2 && tableBPhase == 3 && hasMob == 1){
+                try {
+                    gp.obj[2].image = ImageIO.read(new File("res/objects/table1.png"));
+                    int pos = gp.cust.size();
+                    gp.cust.add(new Customer(gp));
+                    gp.cust.get(pos).x = gp.tileSize * 2 - 8;
+                    gp.cust.get(pos).y = 0;
+                    gp.cust.get(pos).hasTable = false;
+                    gp.obj[2].empty = true;
+                    tableBPhase = 0;
+                    hasMob = 0;
+                    gp.player.cancelMoodB = false;
+                    gp.playSoundFX(2);
+                    point += 500;
+                    gp.ui.showMessage("+ 500");
+                    gp.ui.x = 550;
+                    gp.ui.y = 240;
+                    System.out.println("point: " + point); 
+                    
+                } catch (IOException ex) {
+                    Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        // table C after full    
+            else if (i == 3 && tableCPhase == 3 && hasMob == 1){
+                try {
+                    gp.obj[3].image = ImageIO.read(new File("res/objects/table1.png"));
+                    int pos = gp.cust.size();
+                    gp.cust.add(new Customer(gp));
+                    gp.cust.get(pos).x = gp.tileSize * 2 - 8;
+                    gp.cust.get(pos).y = 0;
+                    gp.cust.get(pos).hasTable = false;
+                    gp.obj[3].empty = true;
+                    tableCPhase = 0;
+                    hasMob = 0;
+                    gp.player.cancelMoodC = false;
+                    gp.playSoundFX(2);
+                    point += 500;
+                    gp.ui.showMessage("+ 500");
+                    gp.ui.x = 300;
+                    gp.ui.y = 430;
+                    System.out.println("point: " + point);
+                    
+                } catch (IOException ex) {
+                    Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        // table D after full    
+            else if (i == 4 && tableDPhase == 3 && hasMob == 1){
+                try {
+                    gp.obj[4].image = ImageIO.read(new File("res/objects/table1.png"));
+                    int pos = gp.cust.size();
+                    gp.cust.add(new Customer(gp));
+                    gp.cust.get(pos).x = gp.tileSize * 2 - 8;
+                    gp.cust.get(pos).y = 0;
+                    gp.cust.get(pos).hasTable = false;
+                    gp.obj[4].empty = true;
+                    tableDPhase = 0;
+                    hasMob = 0;
+                    gp.player.cancelMoodD = false;
+                    gp.playSoundFX(2);
+                    point += 500;
+                    gp.ui.showMessage("+ 500");
+                    gp.ui.x = 550;
+                    gp.ui.y = 430;
+                    System.out.println("point: " + point);
+                    
+                } catch (IOException ex) {
+                    Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
     }
-    
-    //make walking animetion
-  public void draw(Graphics2D g2){        
+
+  //make walking animation
+    public void draw(Graphics2D g2){        
         BufferedImage image = null;
+    // no noodles  
         if(hasKey == 0){
             switch(direction){
                 case "up":
@@ -309,6 +516,7 @@ public class Player extends Entity{
                     break;
             }
         }
+        // have noodles
         else if(hasKey >= 1){
             switch(direction){
                 case "up":
@@ -344,19 +552,8 @@ public class Player extends Entity{
                     }
                     break;
             }
-            
         }
-        //g2.drawImage(image, x, y, gp.tileSize, gp.tileSize, null);
         g2.drawImage(image, x, y, 69, 69, null);
-                    
-        
-        if(keyH.counter > sl.randomNumber){
-                        gp.obj[35] = new Shop();
-                        gp.obj[35].x = 7 * gp.tileSize + 23;
-                        gp.obj[35].y = 0;
-                        
-                        keyH.counter = 0;
-                        }
-        
+   
     }
 }

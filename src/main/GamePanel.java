@@ -2,12 +2,13 @@
 package main;
 
 
+import Timer.FinishGame;
 import entity.*;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import javax.imageio.plugins.tiff.ExifGPSTagSet;
+import java.util.ArrayList;
 import javax.swing.JPanel;
 import object.SuperObject;
 import tile.TileManager;
@@ -30,26 +31,43 @@ public class GamePanel extends JPanel implements Runnable{
     TileManager tileM = new TileManager(this);
     
     //to input key event
-    KeyHandler keyH = new KeyHandler();
+    KeyHandler keyH = new KeyHandler(this);
     
-    SleepSetter sl = new SleepSetter();
     //run
     Thread gameThread;
+    
+    //Game state
+    public int gamestate;
+    public final int titleState = 0;
+    public final int playstate = 1;
+    public final int pausestate = 2;
+    public final int finishstate = 3;
+    
+    
+    //sound
+    Sound sound = new Sound();
     
     //collision
     public CollisionChecker cChecker = new CollisionChecker(this);
     //object pos
     public AssetSetter aSetter = new AssetSetter(this);
     
+    //UI
+    public UI ui = new UI(this);
+    
     //from Player Class
-    public Player player = new Player(this, keyH, sl);
+    public Player player = new Player(this, keyH);
     
     //Object
-    public SuperObject obj[] = new SuperObject[40];
-    
+    public SuperObject obj[] = new SuperObject[100];
+       
     //customer
-    public Entity cust[] = new Entity[7];
+    public  ArrayList<Entity> cust = new ArrayList();
     public int line = 0;
+    
+    //timer
+    FinishGame gameTimer = new FinishGame(180000, this);
+    
     
     public GamePanel(){
         //if use setSize -> size be specified but setPreferredSize -> size is depending on the size of container
@@ -64,12 +82,18 @@ public class GamePanel extends JPanel implements Runnable{
         
         //focused to recieve key input
         this.setFocusable(true);
+        gameTimer.starttimer();
+        String time = gameTimer.getRemainingTime();
+        
         
     }
     
     public void setupGame(){
         aSetter.setObject();
         aSetter.setCustomer();
+        //playMusic(0);
+        gamestate = playstate;
+    
     }
     
     public void startGameThread(){
@@ -79,9 +103,8 @@ public class GamePanel extends JPanel implements Runnable{
     
     @Override
     public void run() {
-        // 10000000000 nanosec = 1 sec
+        // 10000000000 nanosec = 1 secÏ
         double drawInterval = 1000000000/FPS; // 0.01666 seconds
-        //// double nextDrawTime = System.nanoTime() + drawInterval;
         double delta = 0;
         long lastTime = System.nanoTime();
         long currentTime;
@@ -115,25 +138,23 @@ public class GamePanel extends JPanel implements Runnable{
     
     public void update(){
         //player
-        player.update();
-        
+        if(gamestate == playstate){
+            player.update();
+          
         //customer
-        for(int i = 0; i < cust.length; i++){
-            if(i == 0 && cust[i] != null){
-                cust[i].update();
+        for(int i = 0; i < cust.size(); i++){
+            if(i == 0 && cust.get(i) != null){
+                cust.get(i).update();
             }
-            else if(cust[i] != null && cust[i - 1].hasTable == true){
-                //System.out.println(cust[i].collisionOn);
-                cust[i].update();
-//                if(cust[i].collisionOn == false){
-//                    cust[i].update();
-//                }
-            }
-            else if(cust[i] != null && line >= 1 && cust[i - 1].hasline == true){
-                cust[i].update();
+            else if(cust.get(i) != null && cust.get(i - 1).hasTable == true){
+                cust.get(i).update();
             }
         }
-        System.out.println(keyH.counter);
+        if(gameTimer.gameFinished == true){
+            System.out.println("time up!!!");
+            gamestate = finishstate;
+        }
+        }
     }
     
     @Override
@@ -143,48 +164,64 @@ public class GamePanel extends JPanel implements Runnable{
         //change Graphic -> Graphics2D (Graphic2D has more function)
         Graphics2D g2 = (Graphics2D)g;
         
-         //draw tile before player (tile will be behind player)
+        
+        //TITLE Screen
+        if(gamestate == titleState){
+            ui.draw(g2);
+            
+            
+            
+        }//Other
+        else{
+            //draw tile before player (tile will be behind player)
         tileM.draw(g2);
         
         //draw obj
         for(int i = 0; i < obj.length; i++){
-            if(obj[i] != null && (i != 11 || i != 12 || i != 13 || i != 14 || i != 31 || i != 32 || i != 33 || i != 34)){
+            if(obj[i] != null){
                 obj[i].draw(g2, this);
             }
         }
         //draw customer
-        for(int i = 0; i < cust.length; i++){
-            if(i == 0 && cust[i] != null){
-                cust[i].draw(g2);
+        for(int i = 0; i < cust.size(); i++){
+
+            if(i == 0 && cust.get(i) != null){
+                cust.get(i).draw(g2);   
             }
-            else if(cust[i] != null && cust[i - 1].hasTable == true){
-                cust[i].draw(g2);
+            else if(cust.get(i) != null && cust.get(i-1).hasTable == true){
+                cust.get(i).draw(g2);
             }
-            else if(cust[i] != null && line >= 1 && cust[i - 1].hasline == true){
-                cust[i].draw(g2);
-            }
+
         }
-//        try{
-//            for(int i = 0; i < cust.length; i++){
-//            if(cust[i] != null){
-//                cust[i].draw(g2);
-//            }
-//            Thread.sleep(5000);
-//        }
-//        }catch(InterruptedException e){
-//            System.out.println(e);
-//        }
         //draw player
         player.draw(g2);
         
-        for(int i = 0; i < obj.length; i++){
-            if(obj[i] != null && (i == 11 || i == 12 || i == 13 || i == 14 || i == 31 || i == 32 || i == 33 || i == 34)){
-                obj[i].draw(g2, this);
-            }
+        //UI draw
+        ui.draw(g2);
+        
+            
         }
         
         
+        
+        
+         
         //dispose graphic context and release sys rerource that it using
         g2.dispose();
+        
+    }
+    
+    // sound
+    public void playMusic(int i){
+        sound.setFile(i);
+        sound.play();
+        sound.loop(); 
+    }
+    public void stopMusic(){
+        sound.stop();
+    }
+    public void playSoundFX(int i){
+        sound.setFile(i);
+        sound.play();
     }
 }

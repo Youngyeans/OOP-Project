@@ -1,3 +1,4 @@
+
 package tile;
 
 import java.awt.Graphics2D;
@@ -178,9 +179,7 @@ public class TileManager {
                 }
             }
             br.close();
-        }catch(Exception e){
-            
-        }
+        }catch(Exception e){}
     }
     
     public void draw(Graphics2D g2){
@@ -189,12 +188,10 @@ public class TileManager {
         int row = 0;
         int x = 0;
         int y = 0;
-        
         //to make col and row not be larger than the screeen
         while(col < gp.maxScreenCol && row < gp.maxScreenRow){
             //use map text matrix to make a map
             int tileNum = mapTileNum[col][row];
-            
             //draw each tile
             g2.drawImage(tile[tileNum].image, x, y, gp.tileSize, gp.tileSize, null);
             col++;
