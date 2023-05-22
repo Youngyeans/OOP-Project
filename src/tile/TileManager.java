@@ -1,4 +1,3 @@
-
 package tile;
 
 import java.awt.Graphics2D;
@@ -11,26 +10,21 @@ import java.io.InputStreamReader;
 import javax.imageio.ImageIO;
 import main.GamePanel;
 
-public class TileManager {
-    GamePanel gp;
-    public Tile[] tile;
-    //from maps text(notepad)
-    public int mapTileNum[][];
+public class TileManager extends Tile{
+    private GamePanel gp;
+    private Tile[] tile;
+    private int mapTileNum[][];
     
     public TileManager(GamePanel gp){
         this.gp = gp;
-        //type of tiles (grass, water , sand)
         tile = new Tile[40];
-        //maps text (Matrix)
-        mapTileNum = new int[gp.maxScreenCol][gp.maxScreenRow];
-        
+        mapTileNum = new int[gp.getMaxScreenCol()][gp.getMaxScreenRow()];
         getTileImage();
         loadMap("res/maps/map01.txt");
     }
-    //get image
+    
     public void getTileImage(){
         try{
-            //true = wall
             tile[0] = new Tile();
             tile[0].image = ImageIO.read(new File("res/tiles/1.png"));
             tile[0].collision = true;
@@ -96,14 +90,16 @@ public class TileManager {
             tile[15].collision = true;
             
             tile[16] = new Tile();
-            tile[16].image = ImageIO.read(new File("res/tiles/17.png"));
+            tile[16].image = ImageIO.read(new File("res/tiles/16.1.png"));
             tile[16].collision = true;
             
             tile[17] = new Tile();
-            tile[17].image = ImageIO.read(new File("res/tiles/18.png"));
+            tile[17].image = ImageIO.read(new File("res/tiles/17.1.png"));
+            tile[17].collision = true;
             
             tile[18] = new Tile();
-            tile[18].image = ImageIO.read(new File("res/tiles/19.png"));
+            tile[18].image = ImageIO.read(new File("res/tiles/18.1.png"));
+            tile[18].collision = true;
             
             tile[19] = new Tile();
             tile[19].image = ImageIO.read(new File("res/tiles/20.png"));
@@ -119,30 +115,23 @@ public class TileManager {
             tile[22].image = ImageIO.read(new File("res/tiles/23.png"));
             
             tile[23] = new Tile();
-            tile[23].image = ImageIO.read(new File("res/tiles/24.png"));
+            tile[23].image = ImageIO.read(new File("res/tiles/23.1.png"));
+            tile[23].collision = true;
             
             tile[24] = new Tile();
-            tile[24].image = ImageIO.read(new File("res/tiles/25.png"));
+            tile[24].image = ImageIO.read(new File("res/tiles/24.1.png"));
+            tile[24].collision = true;
             
             tile[25] = new Tile();
-            tile[25].image = ImageIO.read(new File("res/tiles/26.png"));
+            tile[25].image = ImageIO.read(new File("res/tiles/23.png"));
+            tile[25].collision = true;
             
             tile[26] = new Tile();
-            tile[26].image = ImageIO.read(new File("res/tiles/27.png"));
+            tile[26].image = ImageIO.read(new File("res/tiles/22.png"));
+            tile[26].collision = true;
             
             tile[27] = new Tile();
-            tile[27].image = ImageIO.read(new File("res/tiles/28.png"));
-            tile[27].collision = true;
-            
-            tile[28] = new Tile();
-            tile[28].image = ImageIO.read(new File("res/tiles/29.png"));
-            tile[28].collision = true;
-            
-            tile[29] = new Tile();
-            tile[29].image = ImageIO.read(new File("res/tiles/30.png"));
-            
-            tile[30] = new Tile();
-            tile[30].image = ImageIO.read(new File("res/tiles/31.png"));
+            tile[27].image = ImageIO.read(new File("res/tiles/31.png"));
             
         }catch(IOException e){
             e.printStackTrace();
@@ -151,58 +140,62 @@ public class TileManager {
     
     public void loadMap(String filePath){
         try{
-            //file input
             InputStream is = new FileInputStream(filePath);
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
-            
             int col = 0;
             int row = 0;
-            
-            //change text to be matrix
-            while(col < gp.maxScreenCol && row < gp.maxScreenRow){
-                //read a line of text maps
+            while(col < gp.getMaxScreenCol() && row < gp.getMaxScreenRow()){
                 String line = br.readLine();
-                
-                while(col < gp.maxScreenCol){
-                    //split at the space(" ")
+                while(col < gp.getMaxScreenCol()){
                     String numbers[] = line.split(" ");
-                    
                     int num = Integer.parseInt(numbers[col]);
-                    //collect in []
                     mapTileNum[col][row] = num;
                     col++;
                 }
-                //read next line
-                if(col == gp.maxScreenCol){
+                if(col == gp.getMaxScreenCol()){
                     col =0;
                     row++;
                 }
             }
             br.close();
-        }catch(Exception e){}
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
     
     public void draw(Graphics2D g2){
-        
         int col = 0;
         int row = 0;
         int x = 0;
         int y = 0;
-        //to make col and row not be larger than the screeen
-        while(col < gp.maxScreenCol && row < gp.maxScreenRow){
-            //use map text matrix to make a map
+        while(col < gp.getMaxScreenCol() && row < gp.getMaxScreenRow()){
             int tileNum = mapTileNum[col][row];
-            //draw each tile
-            g2.drawImage(tile[tileNum].image, x, y, gp.tileSize, gp.tileSize, null);
+            g2.drawImage(tile[tileNum].image, x, y, gp.getTileSize(), gp.getTileSize(), null);
             col++;
-            x += gp.tileSize;
-            //drawing the next line
-            if(col == gp.maxScreenCol){
+            x += gp.getTileSize();
+            if(col == gp.getMaxScreenCol()){
                 col = 0;
                 x = 0;
                 row++;
-                y += gp.tileSize;
+                y += gp.getTileSize();
             }
         }
     }
+
+    public Tile[] getTile() {
+        return tile;
+    }
+
+    public void setTile(Tile[] tile) {
+        this.tile = tile;
+    }
+
+    public int[][] getMapTileNum() {
+        return mapTileNum;
+    }
+
+    public void setMapTileNum(int[][] mapTileNum) {
+        this.mapTileNum = mapTileNum;
+    }
+    
 }

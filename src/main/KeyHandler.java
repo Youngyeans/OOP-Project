@@ -1,79 +1,86 @@
-
 package main;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-
 public class KeyHandler implements KeyListener{
-    public boolean upPressed, downPressed, leftPressed, rightPressed, pickUpPressed;
-    public int counter = 0;
-    GamePanel gp;
+    private GamePanel gp;
+    private boolean upPressed, downPressed, leftPressed, rightPressed, pickupPressed;
+    private int counter = 0;
+    
     public KeyHandler(GamePanel gp){
         this.gp = gp;
     }
     
     @Override
-    public void keyTyped(KeyEvent e) {
-    }
+    public void keyTyped(KeyEvent e) {}
 
     @Override
     public void keyPressed(KeyEvent e) {
-        
-        //return integer keyCode (key event)
         int code = e.getKeyCode();
-        // W Key
-        if(code == KeyEvent.VK_UP){
-            
+        if(code == KeyEvent.VK_W || code == KeyEvent.VK_UP){
             upPressed = true;
         }
-        // S Key
-        if(code == KeyEvent.VK_DOWN){
-            
-            downPressed = true;
-        // A Key
-        }
-        if(code == KeyEvent.VK_LEFT){
-            counter ++;
+        if(code == KeyEvent.VK_A || code == KeyEvent.VK_LEFT){
             leftPressed = true;
-        // D Key    
         }
-        if(code == KeyEvent.VK_RIGHT){
+        if(code == KeyEvent.VK_S || code == KeyEvent.VK_DOWN){
+            downPressed = true;
+        }
+        if(code == KeyEvent.VK_D || code == KeyEvent.VK_RIGHT){
             rightPressed = true;
         }
-        if(code == KeyEvent.VK_SPACE){
-            pickUpPressed = true;
-            
-        }
         if(code == KeyEvent.VK_P){
-            if(gp.gamestate == gp.playstate){
-                gp.gamestate = gp.pausestate;
+            if(gp.getGameState() == gp.getPlayState()){
+                gp.setGameState(gp.getPauseState());
             }
-            else if(gp.gamestate == gp.pausestate){
-                gp.gamestate = gp.playstate;
+            else if(gp.getGameState() == gp.getPauseState()){
+                gp.setGameState(gp.getPlayState());
             }
+        }
+        if(code == KeyEvent.VK_SPACE){
+            pickupPressed = true;
         }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
         int code = e.getKeyCode();
-        if(code == KeyEvent.VK_UP){
+        if(code == KeyEvent.VK_W || code == KeyEvent.VK_UP){
             upPressed = false;
         }
-        if(code == KeyEvent.VK_DOWN){
-            downPressed = false;
-             
-        }
-        if(code == KeyEvent.VK_LEFT){
+        if(code == KeyEvent.VK_A || code == KeyEvent.VK_LEFT){
             leftPressed = false;
         }
-        if(code == KeyEvent.VK_RIGHT){
+        if(code == KeyEvent.VK_S || code == KeyEvent.VK_DOWN){
+            downPressed = false;
+        }
+        if(code == KeyEvent.VK_D || code == KeyEvent.VK_RIGHT){
             rightPressed = false;
         }
         if(code == KeyEvent.VK_SPACE){
-            pickUpPressed = false;
+            pickupPressed = false;
         }
+    }
+
+    public boolean isUpPressed() {
+        return upPressed;
+    }
+
+    public boolean isDownPresed() {
+        return downPressed;
+    }
+
+    public boolean isLeftPressed() {
+        return leftPressed;
+    }
+
+    public boolean isRightPressed() {
+        return rightPressed;
+    }
+
+    public boolean isPickupPressed() {
+        return pickupPressed;
     }
     
 }

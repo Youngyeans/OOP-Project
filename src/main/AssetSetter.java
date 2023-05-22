@@ -1,83 +1,77 @@
-
 package main;
 
 import entity.Customer;
 import object.OBJ_Clean;
 import object.OBJ_Key;
-import object.Table;
 import object.ShopnoNoodle;
+import object.Slot;
+import object.Table;
 
-// set pos for object
 public class AssetSetter {
-    GamePanel gp;
+    private GamePanel gp;
+    
     public AssetSetter(GamePanel gp){
         this.gp = gp;
     }
     
     public void setObject(){
-        //shop
-        gp.obj[0] = new ShopnoNoodle();
-        gp.obj[0].x = 7 * gp.tileSize + 23;
-        gp.obj[0].y = 0;
+        gp.setValueInOBJ(gp.getObj(), 0, new ShopnoNoodle());
+        gp.getValueFromOBJ(gp.getObj(), 0).setX(7 * gp.getTileSize() + 23);
+        gp.getValueFromOBJ(gp.getObj(), 0).setY(0);
         
-        //table A
-        gp.obj[1] = new Table();
-        gp.obj[1].x = 5 * gp.tileSize + 13;
-        gp.obj[1].y = 3 * gp.tileSize + 14;
-        gp.obj[1].empty = true;
-
-        //table B
-        gp.obj[2] = new Table();
-        gp.obj[2].x = 11 * gp.tileSize - 14;
-        gp.obj[2].y = 3 * gp.tileSize + 14;
-        gp.obj[2].empty = true;
+        gp.setValueInOBJ(gp.getObj(), 1, new Table());
+        gp.getValueFromOBJ(gp.getObj(), 1).setX(5 * gp.getTileSize() + 13);
+        gp.getValueFromOBJ(gp.getObj(), 1).setY(3 * gp.getTileSize() + 14);
+        gp.getValueFromOBJ(gp.getObj(), 1).setEmpty(true);
         
-        //table C
-        gp.obj[3] = new Table();
-        gp.obj[3].x = 5 * gp.tileSize + 13;
-        gp.obj[3].y = 7 * gp.tileSize + 7;
-        gp.obj[3].empty = true;
+        gp.setValueInOBJ(gp.getObj(), 2, new Table());
+        gp.getValueFromOBJ(gp.getObj(), 2).setX(11 * gp.getTileSize() - 14);
+        gp.getValueFromOBJ(gp.getObj(), 2).setY(3 * gp.getTileSize() + 14);
+        gp.getValueFromOBJ(gp.getObj(), 2).setEmpty(true);
         
-        //tabel D
-        gp.obj[4] = new Table();
-        gp.obj[4].x = 11 * gp.tileSize - 14;
-        gp.obj[4].y = 7 * gp.tileSize + 7;
-        gp.obj[4].empty = true;
+        gp.setValueInOBJ(gp.getObj(), 3, new Table());
+        gp.getValueFromOBJ(gp.getObj(), 3).setX(5 * gp.getTileSize() + 13);
+        gp.getValueFromOBJ(gp.getObj(), 3).setY(7 * gp.getTileSize() + 7);
+        gp.getValueFromOBJ(gp.getObj(), 3).setEmpty(true);
         
-        //noodle
-        gp.obj[5] = new OBJ_Key();
-        gp.obj[5].x = 14 * gp.tileSize;
-        gp.obj[5].y = 1 * gp.tileSize + 20;
-      
-        //clean
-        gp.obj[6] = new OBJ_Clean();
-        gp.obj[6].x = 12 * gp.tileSize;
-        gp.obj[6].y = 1 * gp.tileSize + 17;
-    }
-
-// customer
-    public void setCustomer(){
+        gp.setValueInOBJ(gp.getObj(), 4, new Table());
+        gp.getValueFromOBJ(gp.getObj(), 4).setX(11 * gp.getTileSize() - 14);
+        gp.getValueFromOBJ(gp.getObj(), 4).setY(7 * gp.getTileSize() + 7);
+        gp.getValueFromOBJ(gp.getObj(), 4).setEmpty(true);
         
-        gp.cust.add(0,new Customer(gp));
-        gp.cust.add(1,new Customer(gp));
-        gp.cust.add(2,new Customer(gp));
-        gp.cust.add(3,new Customer(gp));
-
-        gp.cust.get(0).x = gp.tileSize * 2 - 8;
-        gp.cust.get(0).y = 0;
-        gp.cust.get(0).hasTable = false;
+        gp.setValueInOBJ(gp.getObj(), 5, new OBJ_Key());
+        gp.getValueFromOBJ(gp.getObj(), 5).setX(12 * gp.getTileSize());
+        gp.getValueFromOBJ(gp.getObj(), 5).setY(1 * gp.getTileSize() + 20);
         
-        gp.cust.get(1).x = gp.tileSize * 2 - 8;
-        gp.cust.get(1).y = 0;
-        gp.cust.get(1).hasTable = false;
+        gp.setValueInOBJ(gp.getObj(), 6, new OBJ_Clean());
+        gp.getValueFromOBJ(gp.getObj(), 6).setX(11/2 * gp.getTileSize() + 20);
+        gp.getValueFromOBJ(gp.getObj(), 6).setY(1 * gp.getTileSize() + 30);
         
-        gp.cust.get(2).x = gp.tileSize * 2 - 8;
-        gp.cust.get(2).y = 0;
-        gp.cust.get(2).hasTable = false;
-        
-        gp.cust.get(3).x = gp.tileSize * 2 - 8;
-        gp.cust.get(3).y = 0;
-        gp.cust.get(3).hasTable = false;
+        gp.setValueInOBJ(gp.getObj(), 7, new Slot());
+        gp.getValueFromOBJ(gp.getObj(), 7).setX(gp.getTileSize() - 80);
+        gp.getValueFromOBJ(gp.getObj(), 7).setY(9 * gp.getTileSize() + 40);
     }
     
+    public void setCustomer(){
+        gp.getCust().add(0, new Customer(gp));
+        gp.getCust().add(1, new Customer(gp));
+        gp.getCust().add(2, new Customer(gp));
+        gp.getCust().add(3, new Customer(gp));
+        
+        gp.getCust().get(0).setX(gp.getTileSize());
+        gp.getCust().get(0).setY(0);
+        gp.getCust().get(0).setHasTable(false);
+        
+        gp.getCust().get(1).setX(gp.getTileSize());
+        gp.getCust().get(1).setY(0);
+        gp.getCust().get(1).setHasTable(false);
+        
+        gp.getCust().get(2).setX(gp.getTileSize());
+        gp.getCust().get(2).setY(0);
+        gp.getCust().get(2).setHasTable(false);
+        
+        gp.getCust().get(3).setX(gp.getTileSize());
+        gp.getCust().get(3).setY(0);
+        gp.getCust().get(3).setHasTable(false);
+    }
 }

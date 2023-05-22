@@ -1,27 +1,37 @@
-
 package main;
 
 import javax.swing.JFrame;
 
-public class Main {
-    public static void main(String[] args) {
-        JFrame window = new JFrame();
+public class Main{
+    private JFrame window;
+    private GamePanel gamePanel;
+    public Main(){
+        window = new JFrame();
+        gamePanel = new GamePanel(this);
+        
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        window.setResizable(false);
+        window.setResizable(true);
         window.setTitle("game");
         
-        GamePanel gamePanel = new GamePanel();
         window.add(gamePanel);
         
-        //pack window w panel(window will have same size w panel)
         window.pack();
-        
         window.setLocationRelativeTo(null);
         window.setVisible(true);
         
-        // set object and customer
         gamePanel.setupGame();
-        //to make game loop
         gamePanel.startGameThread();
+    }
+    
+    public JFrame getWindow(){
+        return window;
+    }
+    
+    public void setGamePanel(GamePanel gamePanel){
+        this.gamePanel = gamePanel;
+    }
+    
+    public GamePanel getGamePanel(){
+        return gamePanel;
     }
 }

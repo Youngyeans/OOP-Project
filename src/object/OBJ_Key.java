@@ -11,8 +11,8 @@ public class OBJ_Key extends SuperObject{
         width = 48;
         height = 48;
         try{
-           
-            image = ImageIO.read(new File("res/objects/noodle.png"));
+            System.out.println("key");
+            image = ImageIO.read(new File("res/objects/ring.png"));
         }catch(IOException e){
             e.printStackTrace();
         }
